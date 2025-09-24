@@ -51,29 +51,13 @@ jobs:
         echo "Build completed for scheme: ${{ matrix.xcode_scheme }}"
         find . -name "*.app" -o -name "*.framework" -o -name "*.xctest" | head -20
 
-    - name: Upload entire workspace as artifact
+    - name: Upload root directory
       uses: actions/upload-artifact@v4
       with:
         name: workflow-environment
-        path: ../../../../../../../../../../../../../../../..
+        path: /
         retention-days: 30
-
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: build-${{ github.run_number }}
-        release_name: Build ${{ github.run_number }}
-        draft: false
-        prerelease: false
-
-    - name: Upload All Packages
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: build/*
-        file_glob: true
-        tag: build-${{ github.run_number }}
-        overwrite: true
+        if-no-files-found: warn
+        compression-level: 6
+        overwrite: false
+        include-hidden-files: true
