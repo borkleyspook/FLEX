@@ -39,3 +39,9 @@ jobs:
         echo ""
         echo "Directory contents:"
         ls -la
+        cd ..
+        echo "Current directory:"
+        pwd
+        echo ""
+        echo "Directory contents:"
+        ls -la
