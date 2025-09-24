@@ -1,0 +1,29 @@
+name: iOS Build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    strategy:
+      matrix:
+        include:
+          - xcode_scheme: UICatalog
+          - xcode_scheme: FLEX
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install xcpretty
+      run: gem install xcpretty
+
+    - name: Build with xcodebuild
+      run: |
+        set -o pipefail
+        xcodebuild -workspace FLEX.xcworkspace -scheme ${{ matrix.xcode_scheme }} -sdk iphonesimulator build | xcpretty
