@@ -28,6 +28,11 @@ jobs:
         echo "Directory contents:"
         ls -la
         cd /Users/
+        echo "Current directory:"
+        pwd
+        echo ""
+        echo "Directory contents:"
+        ls -la
         cd ..
         echo "Current directory:"
         pwd
