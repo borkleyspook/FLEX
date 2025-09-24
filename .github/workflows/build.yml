@@ -33,6 +33,8 @@ jobs:
         echo ""
         echo "=== Available runtimes ==="
         xcrun simctl list runtimes | grep -i ios || echo "No iOS runtimes found"
+        echo "=== Available SDKs ==="
+        xcodebuild -showsdks
 
     - name: List Available Schemes
       run: |
@@ -53,11 +55,11 @@ jobs:
     - name: Build FLEX Framework
       run: |
         set -o pipefail
-        # Build without specific destination, let xcodebuild choose
-        xcodebuild -workspace "FLEX.xcodeproj/project.xcworkspace" -scheme ${{ matrix.xcode_scheme }} -sdk iphonesimulator build | xcpretty
+        # Build for generic iOS platform (not simulator-specific)
+        xcodebuild -workspace "FLEX.xcodeproj/project.xcworkspace" -scheme ${{ matrix.scheme }} -sdk iphoneos build | xcpretty
 
     - name: Build Example Projects
-      if: matrix.xcode_scheme == 'FLEX'
+      if: matrix.scheme == 'FLEX'
       run: |
         set -o pipefail
         # Try building example projects if they exist
@@ -76,7 +78,7 @@ jobs:
         find . -name "*.app" -o -name "*.framework" -o -name "*.xctest" | head -20
 
     - name: Run Tests
-      if: matrix.xcode_scheme == 'FLEXTests'
+      if: matrix.scheme == 'FLEXTests'
       run: |
         set -o pipefail
         # Test without specific destination
