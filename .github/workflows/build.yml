@@ -19,53 +19,23 @@ jobs:
     strategy:
       matrix:
         include:
-          - xcode_scheme: UICatalog
           - xcode_scheme: FLEX
+          - xcode_scheme: FLEXample
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Detect Project Structure
-      id: detect_project
+    - name: Verify Project Structure
       run: |
-        echo "Current directory structure:"
+        echo "Project structure:"
         find . -name "*.xcworkspace" -o -name "*.xcodeproj" | head -10
-        
-        if [ -d "FLEX.xcworkspace" ]; then
-          echo "PROJECT_TYPE=workspace" >> $GITHUB_OUTPUT
-          echo "PROJECT_PATH=FLEX.xcworkspace" >> $GITHUB_OUTPUT
-          echo "Using FLEX.xcworkspace"
-        elif [ -d "FLEX.xcodeproj" ]; then
-          echo "PROJECT_TYPE=project" >> $GITHUB_OUTPUT
-          echo "PROJECT_PATH=FLEX.xcodeproj" >> $GITHUB_OUTPUT
-          echo "Using FLEX.xcodeproj"
-        else
-          # Try to find any workspace or project
-          WORKSPACE=$(find . -name "*.xcworkspace" -d 1 | head -1)
-          PROJECT=$(find . -name "*.xcodeproj" -d 1 | head -1)
-          
-          if [ -n "$WORKSPACE" ]; then
-            echo "PROJECT_TYPE=workspace" >> $GITHUB_OUTPUT
-            echo "PROJECT_PATH=$WORKSPACE" >> $GITHUB_OUTPUT
-            echo "Using found workspace: $WORKSPACE"
-          elif [ -n "$PROJECT" ]; then
-            echo "PROJECT_TYPE=project" >> $GITHUB_OUTPUT
-            echo "PROJECT_PATH=$PROJECT" >> $GITHUB_OUTPUT
-            echo "Using found project: $PROJECT"
-          else
-            echo "No Xcode project or workspace found"
-            exit 1
-          fi
-        fi
-
-    - name: List Available Schemes
-      run: |
-        if [ "${{ steps.detect_project.outputs.PROJECT_TYPE }}" = "workspace" ]; then
-          xcodebuild -workspace "${{ steps.detect_project.outputs.PROJECT_PATH }}" -list
-        else
-          xcodebuild -project "${{ steps.detect_project.outputs.PROJECT_PATH }}" -list
-        fi
+        echo ""
+        echo "Checking workspace:"
+        ls -la FLEX.xcodeproj/project.xcworkspace/
+        echo ""
+        echo "Available schemes:"
+        xcodebuild -workspace "FLEX.xcodeproj/project.xcworkspace" -list
 
     - name: Install xcpretty
       run: gem install xcpretty
@@ -73,11 +43,7 @@ jobs:
     - name: Build with xcodebuild
       run: |
         set -o pipefail
-        if [ "${{ steps.detect_project.outputs.PROJECT_TYPE }}" = "workspace" ]; then
-          xcodebuild -workspace "${{ steps.detect_project.outputs.PROJECT_PATH }}" -scheme ${{ matrix.xcode_scheme }} -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' build | xcpretty
-        else
-          xcodebuild -project "${{ steps.detect_project.outputs.PROJECT_PATH }}" -scheme ${{ matrix.xcode_scheme }} -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' build | xcpretty
-        fi
+        xcodebuild -workspace "FLEX.xcodeproj/project.xcworkspace" -scheme ${{ matrix.xcode_scheme }} -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' build | xcpretty
 
     - name: List build products
       run: |
@@ -90,8 +56,7 @@ jobs:
         name: ios-build-${{ matrix.xcode_scheme }}
         path: |
           build/
-          *.app
-          *.framework
+          DerivedData/
         retention-days: 7
 
     - name: Create Release
