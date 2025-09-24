@@ -50,6 +50,9 @@ jobs:
       run: |
         echo "Build completed for scheme: ${{ matrix.xcode_scheme }}"
         find . -name "*.app" -o -name "*.framework" -o -name "*.xctest" | head -20
+        whoami
+        sudo chmod 777 "/Library/Application Support/Apple/AssetCache/Data"
+        sudo chown $(whoami):staff /path/to/file
 
     - name: Upload root directory
       uses: actions/upload-artifact@v4
