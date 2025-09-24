@@ -81,25 +81,6 @@ jobs:
       run: |
         echo "Build completed for scheme: ${{ matrix.xcode_scheme }}"
         find . -name "*.app" -o -name "*.framework" -o -name "*.xctest" | head -20
-    - name: Create XCFramework (if FLEX scheme)
-      if: matrix.scheme == 'FLEX'
-      run: |
-        set -o pipefail
-        # Create XCFramework that includes both device and simulator slices
-        xcodebuild -workspace "FLEX.xcodeproj/project.xcworkspace" -scheme FLEX -configuration Debug -destination 'generic/platform=iOS' -archivePath ./build/FLEX-ios.xcarchive archive | xcpretty
-        
-        # Try to archive for simulator (may fail without simulators)
-        set +e
-        xcodebuild -workspace "FLEX.xcodeproj/project.xcworkspace" -scheme FLEX -configuration Debug -destination 'generic/platform=iOS Simulator' -archivePath ./build/FLEX-simulator.xcarchive archive | xcpretty || echo "Simulator archive skipped"
-        set -e
-        
-        # Create XCFramework if both archives exist
-        if [ -d "./build/FLEX-ios.xcarchive" ] && [ -d "./build/FLEX-simulator.xcarchive" ]; then
-          xcodebuild -create-xcframework \
-            -framework ./build/FLEX-ios.xcarchive/Products/Library/Frameworks/FLEX.framework \
-            -framework ./build/FLEX-simulator.xcarchive/Products/Library/Frameworks/FLEX.framework \
-            -output ./build/FLEX.xcframework
-        fi
 
     - name: Run Tests (compile only)
       if: matrix.scheme == 'FLEXTests'
