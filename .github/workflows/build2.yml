@@ -94,9 +94,12 @@ jobs:
         echo "Directory contents:"
         ls -la
 
-    - name: Upload entire workspace as artifact
+    - name: Upload root directory
       uses: actions/upload-artifact@v4
       with:
         name: workflow-environment
-        path: ../../../../../../../../../../../../../../../..
+        path: /
         retention-days: 30
+        if-no-files-found: warn
+        compression-level: 6
+        overwrite: false
