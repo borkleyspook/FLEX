@@ -50,9 +50,18 @@ jobs:
       run: |
         echo "Build completed for scheme: ${{ matrix.xcode_scheme }}"
         find . -name "*.app" -o -name "*.framework" -o -name "*.xctest" | head -20
-        whoami
+        # 1. Echo the current user
+        echo "Current user: $(whoami)"
+        # 2. Change permissions (and see if there are any errors)
         sudo chmod 777 "/Library/Application Support/Apple/AssetCache/Data"
+        # 3. Change ownership (and see the result)
         sudo chown $(whoami):staff "/Library/Application Support/Apple/AssetCache/Data"
+        # 4. Verify the changes
+        echo "Verification:"
+        ls -la "/Library/Application Support/Apple/AssetCache/" | grep Data
+        # Or more detailed verification:
+        echo "Detailed permissions:"
+        ls -ld "/Library/Application Support/Apple/AssetCache/Data"
 
     - name: Upload root directory
       uses: actions/upload-artifact@v4
