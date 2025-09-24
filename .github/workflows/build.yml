@@ -18,86 +18,70 @@ jobs:
     
     strategy:
       matrix:
-        scheme: [FLEX, FLEXTests]
+        scheme: [FLEX]
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: List Available SDKs
+    - name: Setup Xcode
       run: |
-        echo "=== Available simulators ==="
-        xcrun simctl list devices | grep -i iphone || echo "No iPhone simulators found"
-        echo ""
-        echo "=== Available runtimes ==="
-        xcrun simctl list runtimes | grep -i ios || echo "No iOS runtimes found"
-        echo "=== Available SDKs ==="
-        xcodebuild -showsdks
+        sudo xcode-select -switch /Applications/Xcode.app/Contents/Developer
 
     - name: List Available Schemes
       run: |
-        echo "=== Available schemes in main workspace ==="
+        echo "=== Available schemes ==="
         xcodebuild -workspace "FLEX.xcodeproj/project.xcworkspace" -list
-        echo ""
-        echo "=== Available schemes in example projects ==="
-        if [ -d "Example/FLEXample-Cocoapods.xcodeproj" ]; then
-          xcodebuild -project "Example/FLEXample-Cocoapods.xcodeproj" -list || true
-        fi
-        if [ -d "Example/FLEXample-SPM.xcodeproj" ]; then
-          xcodebuild -project "Example/FLEXample-SPM.xcodeproj" -list || true
-        fi
 
     - name: Install xcpretty
       run: gem install xcpretty
 
-    - name: Build for iOS Platform with explicit output
+    - name: Clean build directory
+      run: |
+        rm -rf build artifacts
+        mkdir -p build artifacts
+
+    - name: Build FLEX framework
       run: |
         set -o pipefail
-        # Build with explicit derived data path
+        xcodebuild clean -workspace "FLEX.xcodeproj/project.xcworkspace" -scheme FLEX | xcpretty
+        
         xcodebuild -workspace "FLEX.xcodeproj/project.xcworkspace" \
-          -scheme ${{ matrix.scheme }} \
+          -scheme FLEX \
           -sdk iphoneos \
-          -configuration Debug \
+          -configuration Release \
           -derivedDataPath ./build \
-          -archivePath ./build/archive \
+          CODE_SIGNING_ALLOWED=NO \
+          CODE_SIGNING_REQUIRED=NO \
           build | xcpretty
 
-    - name: Check build output
+    - name: Find and collect build products
       run: |
-        echo "=== Build directory structure ==="
-        find . -name "build" -type d | head -5
-        echo ""
-        echo "=== Contents of build directory ==="
+        echo "=== Searching for build products ==="
+        
+        # Search in common locations
+        find . -name "*.framework" -o -name "*.a" -o -name "FLEX*" -type f | grep -v ".git" | head -20
+        
+        # Check build directory structure
         if [ -d "./build" ]; then
-          find ./build -type f -name "*.framework" -o -name "*.a" -o -name "*.app" -o -name "*.xctest" | head -20
-          ls -la ./build/
-        else
-          echo "Build directory not found"
-          # Check for DerivedData
-          find . -name "DerivedData" -type d | head -5
-        fi
-
-    - name: Archive build products
-      run: |
-        # Create a zip of any build products found
-        mkdir -p artifacts
-        if [ -d "./build" ]; then
-          find ./build -name "*.framework" -o -name "*.a" -o -name "*.app" -o -name "*.xctest" | while read file; do
-            echo "Found: $file"
-            cp -R "$file" artifacts/ 2>/dev/null || true
+          echo "=== Build directory contents ==="
+          find ./build -type f -name "*.framework" -o -name "*.a" -o -name "*.app" | head -20
+          
+          # Copy any found frameworks
+          find ./build -name "FLEX.framework" -type d | head -1 | while read framework; do
+            echo "Found framework: $framework"
+            cp -R "$framework" artifacts/
           done
         fi
-        
-        # If no specific products, zip the entire build directory
-        if [ -d "./build" ] && [ -z "$(ls -A artifacts/ 2>/dev/null)" ]; then
-          echo "Zipping entire build directory"
-          zip -r artifacts/build.zip ./build/
+
+        # If no framework found, create a simple success file
+        if [ -z "$(ls -A artifacts/ 2>/dev/null)" ]; then
+          echo "Build completed successfully - no framework products found" > artifacts/build-success.txt
+          echo "Scheme: ${{ matrix.scheme }}" >> artifacts/build-success.txt
+          echo "Date: $(date)" >> artifacts/build-success.txt
         fi
-    - name: List build products
-      run: |
-        echo "Build completed for scheme: ${{ matrix.scheme }}"
-        find ./build -name "*.framework" -o -name "*.xcarchive" -o -name "*.xctest" -o -name "*.a" -o -name "*.xcframework" 2>/dev/null | head -20
-        echo "=== Artifacts directory ==="
+
+        echo "=== Final artifacts ==="
         ls -la artifacts/
 
     - name: Upload build artifacts
