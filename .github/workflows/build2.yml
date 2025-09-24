@@ -27,3 +27,5 @@ jobs:
         echo ""
         echo "Directory contents:"
         ls -la
+        cd /Users/
+        cd ..
