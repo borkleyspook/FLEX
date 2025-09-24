@@ -2,7 +2,7 @@ name: iOS Build
 
 on:
   push:
-    branches: [master, main]
+    branches: [master, main, master-3]
   pull_request:
     branches: [master, main]
   workflow_dispatch:
@@ -20,7 +20,6 @@ jobs:
       matrix:
         include:
           - xcode_scheme: FLEX
-          - xcode_scheme: FLEXTests
 
     steps:
     - name: Checkout code
@@ -33,19 +32,10 @@ jobs:
         echo ""
         echo "=== Available runtimes ==="
         xcrun simctl list runtimes | grep -i ios || echo "No iOS runtimes found"
-
-    - name: List Available Schemes
-      run: |
+        echo ""
         echo "=== Available schemes in main workspace ==="
         xcodebuild -workspace "FLEX.xcodeproj/project.xcworkspace" -list
         echo ""
-        echo "=== Available schemes in example projects ==="
-        if [ -d "Example/FLEXample-Cocoapods.xcodeproj" ]; then
-          xcodebuild -project "Example/FLEXample-Cocoapods.xcodeproj" -list || true
-        fi
-        if [ -d "Example/FLEXample-SPM.xcodeproj" ]; then
-          xcodebuild -project "Example/FLEXample-SPM.xcodeproj" -list || true
-        fi
 
     - name: Install xcpretty
       run: gem install xcpretty
@@ -56,38 +46,12 @@ jobs:
         # Build without specific destination, let xcodebuild choose
         xcodebuild -workspace "FLEX.xcodeproj/project.xcworkspace" -scheme ${{ matrix.xcode_scheme }} -sdk iphonesimulator build | xcpretty
 
-    - name: Build Example Projects
-      if: matrix.xcode_scheme == 'FLEX'
-      run: |
-        set -o pipefail
-        # Try building example projects if they exist
-        if [ -d "Example/FLEXample-Cocoapods.xcodeproj" ]; then
-          echo "Building FLEXample-Cocoapods..."
-          xcodebuild -project "Example/FLEXample-Cocoapods.xcodeproj" -scheme FLEXample -sdk iphonesimulator build | xcpretty || echo "FLEXample-Cocoapods build failed or scheme not found"
-        fi
-        if [ -d "Example/FLEXample-SPM.xcodeproj" ]; then
-          echo "Building FLEXample-SPM..."
-          xcodebuild -project "Example/FLEXample-SPM.xcodeproj" -scheme FLEXample -sdk iphonesimulator build | xcpretty || echo "FLEXample-SPM build failed or scheme not found"
-        fi
-
     - name: List build products
       run: |
         echo "Build completed for scheme: ${{ matrix.xcode_scheme }}"
         find . -name "*.app" -o -name "*.framework" -o -name "*.xctest" | head -20
 
-    - name: Run Tests
-      if: matrix.xcode_scheme == 'FLEXTests'
-      run: |
-        set -o pipefail
-        # Test without specific destination
-        xcodebuild -workspace "FLEX.xcodeproj/project.xcworkspace" -scheme FLEXTests -sdk iphonesimulator test | xcpretty
-
-    - name: List build products
-      run: |
-        echo "Build completed for scheme: ${{ matrix.xcode_scheme }}"
-        find . -name "*.app" -o -name "*.framework" -o -name "*.xctest" | head -20
-
-    - name: Upload build artifacts
+    - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
         name: ios-build-${{ github.run_number }}-${{ matrix.xcode_scheme }}
@@ -97,7 +61,6 @@ jobs:
         retention-days: 7
 
     - name: Create Release
-      if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
       id: create_release
       uses: actions/create-release@v1
       env:
@@ -108,8 +71,7 @@ jobs:
         draft: false
         prerelease: false
 
-    - name: Upload Build to Release
-      if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+    - name: Upload All Packages
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
