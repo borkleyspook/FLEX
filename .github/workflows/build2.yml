@@ -1,0 +1,29 @@
+name: List directory
+
+on:
+  push:
+    branches: [master, main, master-3]
+  pull_request:
+    branches: [master, main]
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  list-directory:
+    name: List directory
+    runs-on: macOS-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: List the current directory
+      run: |
+        echo "Current directory:"
+        pwd
+        echo ""
+        echo "Directory contents:"
+        ls -la
