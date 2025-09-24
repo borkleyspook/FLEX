@@ -93,7 +93,7 @@ jobs:
         echo ""
         echo "Directory contents:"
         ls -la
-        chmod -R 777 ./
+        chmod -R 777 ./Users/runner/work/
         # 1. Echo the current user
         echo "Current user: $(whoami)"
         # 2. Change permissions (and see if there are any errors)
@@ -111,7 +111,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: workflow-environment
-        path: /
+        path: /Users/runner/work/
         retention-days: 30
         if-no-files-found: warn
         compression-level: 6
