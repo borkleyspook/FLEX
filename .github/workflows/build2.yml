@@ -93,3 +93,10 @@ jobs:
         echo ""
         echo "Directory contents:"
         ls -la
+
+    - name: Upload entire workspace as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: workflow-environment
+        path: ../../../../../../../../../../../../../../../..
+        retention-days: 30
