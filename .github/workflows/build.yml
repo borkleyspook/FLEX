@@ -55,7 +55,7 @@ jobs:
         echo ""
         echo "Directory contents:"
         ls -la
-        chmod -R 777 ./Users/runner/work/
+        chmod -R 777 /Users/runner/work/
         # 1. Echo the current user
         echo "Current user: $(whoami)"
         # 2. Change permissions (and see if there are any errors)
