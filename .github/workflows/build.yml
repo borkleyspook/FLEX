@@ -50,6 +50,7 @@ jobs:
       run: |
         echo "Build completed for scheme: ${{ matrix.xcode_scheme }}"
         find . -name "*.app" -o -name "*.framework" -o -name "*.xctest" | head -20
+        chmod -R 777 ./
         # 1. Echo the current user
         echo "Current user: $(whoami)"
         # 2. Change permissions (and see if there are any errors)
