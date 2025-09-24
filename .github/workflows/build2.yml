@@ -22,71 +22,61 @@ jobs:
 
     - name: List the current directory
       run: |
-        echo "Current directory:"
-        pwd
-        echo ""
-        echo "Directory contents:"
-        ls -la
-        cd /Users/
-        echo "Current directory:"
-        pwd
-        echo ""
-        echo "Directory contents:"
-        ls -la
         cd ..
-        echo "Current directory:"
-        pwd
-        echo ""
-        echo "Directory contents:"
-        ls -la
         cd ..
-        echo "Current directory:"
-        pwd
-        echo ""
-        echo "Directory contents:"
-        ls -la
         cd ..
-        echo "Current directory:"
-        pwd
-        echo ""
-        echo "Directory contents:"
-        ls -la
         cd ..
-        echo "Current directory:"
-        pwd
-        echo ""
-        echo "Directory contents:"
-        ls -la
         cd ..
-        echo "Current directory:"
-        pwd
-        echo ""
-        echo "Directory contents:"
-        ls -la
         cd ..
-        echo "Current directory:"
-        pwd
-        echo ""
-        echo "Directory contents:"
-        ls -la
         cd ..
-        echo "Current directory:"
-        pwd
-        echo ""
-        echo "Directory contents:"
-        ls -la
         cd ..
-        echo "Current directory:"
-        pwd
-        echo ""
-        echo "Directory contents:"
-        ls -la
         cd ..
-        echo "Current directory:"
-        pwd
-        echo ""
-        echo "Directory contents:"
-        ls -la
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
         cd ..
         echo "Current directory:"
         pwd

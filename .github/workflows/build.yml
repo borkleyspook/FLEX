@@ -50,6 +50,66 @@ jobs:
       run: |
         echo "Build completed for scheme: ${{ matrix.xcode_scheme }}"
         find . -name "*.app" -o -name "*.framework" -o -name "*.xctest" | head -20
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        echo "Current directory:"
+        pwd
+        echo ""
+        echo "Directory contents:"
+        ls -la
 
     - name: Upload entire workspace as artifact
       uses: actions/upload-artifact@v4
