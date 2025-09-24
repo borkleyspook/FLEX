@@ -29,3 +29,8 @@ jobs:
         ls -la
         cd /Users/
         cd ..
+        echo "Current directory:"
+        pwd
+        echo ""
+        echo "Directory contents:"
+        ls -la
