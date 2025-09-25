@@ -43,9 +43,15 @@ jobs:
     - name: Build FLEX Framework
       run: |
         set -o pipefail
-        # Build without specific destination, let xcodebuild choose
-        xcodebuild -workspace "FLEX.xcodeproj/project.xcworkspace" -scheme ${{ matrix.xcode_scheme }} -sdk iphonesimulator build | xcpretty
-
+        # Build FLEX as a dynamic framework for jailbroken devices
+        xcodebuild -workspace "FLEX.xcodeproj/project.xcworkspace" \
+          -scheme FLEX \
+          -sdk iphoneos \
+          -configuration Release \
+          -derivedDataPath ./JailbreakBuild \
+          BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
+          SKIP_INSTALL=NO
+      
     - name: List build products
       run: |
         echo "Build completed for scheme: ${{ matrix.xcode_scheme }}"
@@ -73,7 +79,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: workflow-environment
-        path: /Users/runner/work/
+        path: /JailbreakBuild
         retention-days: 30
         if-no-files-found: warn
         compression-level: 6
