@@ -79,7 +79,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: workflow-environment
-        path: /JailbreakBuild
+        path: ./JailbreakBuild
         retention-days: 30
         if-no-files-found: warn
         compression-level: 6
